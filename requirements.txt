@@ -1,0 +1,8 @@
+fastapi
+joblib
+pandas==2.2.3
+numpy==2.1.1
+scikit-learn==1.5.1
+# Replace the three pins above with the numbers your notebook printed
+# in bundle["versions"] (section 6.3). A pickled model only unpickles
+# safely under the versions that wrote it.
