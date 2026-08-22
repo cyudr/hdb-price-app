@@ -5,7 +5,7 @@
 
 import React, { useEffect, useState } from "react";
 import { HdbOptions, PredictionFormData, PredictionResult } from "./types.ts";
-import { INITIAL_FORM, PresetItem } from "./constants/presets.ts";
+import { INITIAL_FORM, PRESETS, PresetItem, DEFAULT_HDB_OPTIONS } from "./constants/presets.ts";
 import { Header } from "./components/Header.tsx";
 import { Presets } from "./components/Presets.tsx";
 import { LoadingState } from "./components/LoadingState.tsx";
@@ -32,10 +32,15 @@ export default function App() {
     setOptionsError(null);
     try {
       const res = await fetch("/api/options");
-      if (!res.ok) {
-        throw new Error(`Failed to load options (Status: ${res.status})`);
+      let data: HdbOptions = DEFAULT_HDB_OPTIONS;
+      if (res.ok) {
+        const jsonData = await res.json();
+        if (jsonData && jsonData.town && jsonData.town.length > 0) {
+          data = jsonData;
+        }
+      } else {
+        console.warn(`Could not load dynamic options (Status: ${res.status}). Using fallback options.`);
       }
-      const data: HdbOptions = await res.json();
       setOptions(data);
 
       // Pre-select first options or defaults if form is empty
@@ -48,8 +53,16 @@ export default function App() {
         lease_commence_date: prev.lease_commence_date || "2000",
       }));
     } catch (err: any) {
-      console.error("Error fetching options:", err);
-      setOptionsError(err.message || "Failed to retrieve HDB options.");
+      console.error("Error fetching options, using fallback:", err);
+      setOptions(DEFAULT_HDB_OPTIONS);
+      setFormData((prev) => ({
+        town: prev.town || DEFAULT_HDB_OPTIONS.town[0],
+        flat_type: prev.flat_type || DEFAULT_HDB_OPTIONS.flat_type[3],
+        flat_model: prev.flat_model || DEFAULT_HDB_OPTIONS.flat_model[0],
+        storey_range: prev.storey_range || DEFAULT_HDB_OPTIONS.storey_range[2],
+        floor_area_sqm: prev.floor_area_sqm || "92",
+        lease_commence_date: prev.lease_commence_date || "2000",
+      }));
     } finally {
       setOptionsLoading(false);
     }
@@ -125,7 +138,12 @@ export default function App() {
       const responseData = await res.json();
 
       if (!res.ok) {
-        throw new Error(responseData.error || "Failed to calculate prediction.");
+        const errorMsg =
+          responseData.detail ||
+          responseData.error ||
+          responseData.message ||
+          `Failed to calculate prediction (Status: ${res.status}).`;
+        throw new Error(errorMsg);
       }
 
       setResult(responseData);
