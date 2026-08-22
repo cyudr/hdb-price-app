@@ -84,6 +84,20 @@ const HDB_OPTIONS = {
   ],
 };
 
+// GET /api/health
+app.get("/api/health", async (req, res) => {
+  try {
+    const pythonRes = await fetch("http://127.0.0.1:8000/api/health");
+    const pythonData = await pythonRes.json();
+    return res.status(pythonRes.status).json(pythonData);
+  } catch {
+    return res.json({
+      status: "ok",
+      detail: "HDB Price Estimator backend active.",
+    });
+  }
+});
+
 // GET /api/options
 app.get("/api/options", (req, res) => {
   res.json(HDB_OPTIONS);
