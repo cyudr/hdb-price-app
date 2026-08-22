@@ -19,6 +19,13 @@ export interface PredictionResult {
   range_low: number;
   range_high: number;
   sentence: string;
+  as_of?: string;
+  comparables?: {
+    n: number;
+    median: number;
+    p25: number;
+    p75: number;
+  } | null;
   formatted_estimate?: string;
   formatted_range?: string;
   details?: {

@@ -91,6 +91,49 @@ export const ResultCard: React.FC<ResultCardProps> = ({ result }) => {
           </div>
         </div>
 
+        {/* Model Comparables from bundle if returned */}
+        {result.comparables && (
+          <div className="mt-5 pt-4 border-t border-slate-100 text-xs">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
+              Model Historical Comparables {result.as_of ? `(As of ${result.as_of})` : ""}
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="p-2.5 bg-slate-50 rounded-lg">
+                <span className="text-slate-400 block text-[10px] uppercase font-semibold">
+                  Transactions
+                </span>
+                <span className="font-bold text-slate-800 text-sm">
+                  {result.comparables.n.toLocaleString()}
+                </span>
+              </div>
+              <div className="p-2.5 bg-slate-50 rounded-lg">
+                <span className="text-slate-400 block text-[10px] uppercase font-semibold">
+                  Median
+                </span>
+                <span className="font-bold text-slate-800 text-sm">
+                  ${result.comparables.median.toLocaleString()}
+                </span>
+              </div>
+              <div className="p-2.5 bg-slate-50 rounded-lg">
+                <span className="text-slate-400 block text-[10px] uppercase font-semibold">
+                  25th Percentile
+                </span>
+                <span className="font-bold text-slate-800 text-sm">
+                  ${result.comparables.p25.toLocaleString()}
+                </span>
+              </div>
+              <div className="p-2.5 bg-slate-50 rounded-lg">
+                <span className="text-slate-400 block text-[10px] uppercase font-semibold">
+                  75th Percentile
+                </span>
+                <span className="font-bold text-slate-800 text-sm">
+                  ${result.comparables.p75.toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Detailed Metadata Breakdown */}
         {result.details && (
           <div className="mt-5 grid grid-cols-2 gap-2.5 pt-4 border-t border-slate-100 text-xs">
