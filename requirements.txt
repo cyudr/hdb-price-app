@@ -1,8 +1,9 @@
 fastapi
 joblib
 pandas==2.2.3
-numpy==2.1.1
-scikit-learn==1.5.1
-# Replace the three pins above with the numbers your notebook printed
-# in bundle["versions"] (section 6.3). A pickled model only unpickles
-# safely under the versions that wrote it.
+numpy==2.5.2
+scikit-learn==1.5.2
+# The three pinned lines above must match what YOUR notebook printed in
+# bundle["versions"] (section 6.3). A pickled model only unpickles safely
+# under the versions that wrote it. Print them again with:
+#   python -c "import joblib; print(joblib.load('model/hdb_price_bundle.joblib')['versions'])"
