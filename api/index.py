@@ -21,11 +21,37 @@ BUNDLE_PATH = ROOT / "model" / "hdb_price_bundle.joblib"
 # anyway, and let /api/health say exactly what is wrong.
 bundle = joblib.load(BUNDLE_PATH) if BUNDLE_PATH.exists() else None
 
+DEFAULT_OPTIONS = {
+    "town": [
+        "ANG MO KIO", "BEDOK", "BISHAN", "BUKIT BATOK", "BUKIT MERAH",
+        "BUKIT PANJANG", "BUKIT TIMAH", "CENTRAL AREA", "CHOA CHU KANG",
+        "CLEMENTI", "GEYLANG", "HOUGANG", "JURONG EAST", "JURONG WEST",
+        "KALLANG/WHAMPOA", "MARINE PARADE", "PASIR RIS", "PUNGGOL",
+        "QUEENSTOWN", "SEMBAWANG", "SENGKANG", "SERANGOON", "TAMPINES",
+        "TOA PAYOH", "WOODLANDS", "YISHUN"
+    ],
+    "flat_type": [
+        "1 ROOM", "2 ROOM", "3 ROOM", "4 ROOM", "5 ROOM", "EXECUTIVE", "MULTI-GENERATION"
+    ],
+    "flat_model": [
+        "Model A", "Improved", "New Generation", "Premium Apartment",
+        "Simplified", "Standard", "Maisonette", "Apartment", "Model A2",
+        "DBSS", "Terrace", "Adjoined flat", "Multi Generation",
+        "Premium Maisonette", "Type S1", "Type S2"
+    ],
+    "storey_range": [
+        "01 TO 03", "04 TO 06", "07 TO 09", "10 TO 12", "13 TO 15",
+        "16 TO 18", "19 TO 21", "22 TO 24", "25 TO 27", "28 TO 30",
+        "31 TO 33", "34 TO 36", "37 TO 39", "40 TO 42", "43 TO 45",
+        "46 TO 48", "49 TO 51"
+    ]
+}
+
 workflow = bundle["workflow"] if bundle else None
 comparables = bundle["comparables"] if bundle else None
-OPTIONS = bundle["options"] if bundle else {}
-LATEST = bundle["latest_month"] if bundle else None
-WINDOW_START = bundle["comparable_window_start"] if bundle else None
+OPTIONS = (bundle.get("options") if bundle and "options" in bundle else None) or DEFAULT_OPTIONS
+LATEST = bundle["latest_month"] if bundle else "2024-12"
+WINDOW_START = bundle["comparable_window_start"] if bundle else "2023-01"
 
 app = FastAPI(title = "HDB Resale Price Estimator", version = "1.0")
 router = APIRouter()
@@ -121,8 +147,7 @@ def health():
 
 @router.get("/options")
 def options():
-    require_model()
-    return OPTIONS                         # dropdown lists, straight from Day 1
+    return OPTIONS                         # dropdown lists (from bundle or default benchmark)
 
 
 @router.post("/predict")
